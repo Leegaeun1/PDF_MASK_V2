@@ -1,0 +1,27 @@
+# 파이썬 가상환경
+venv/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
+
+# 데이터베이스 파일 (개발용)
+db.sqlite3
+
+# 미디어 파일 (보통 별도의 스토리지에 저장)
+media/
+
+# Git 관련 파일
+.git
+.gitignore
+
+# Docker 관련 파일
+.dockerignore
+Dockerfile
+
+# VSCode 설정 파일
+.vscode/
+settings.json
+
+# Pyright 설정 파일
+pyrightconfig.json

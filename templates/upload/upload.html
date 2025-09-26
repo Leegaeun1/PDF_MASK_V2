@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>PDF 업로더</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial; margin: 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .btn { display:inline-block; padding:10px 16px; border-radius:10px; border:0; background:#111827; color:#fff; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .hint { color:#6b7280; font-size:14px; }
+  .field { margin: 10px 0; }
+  .field label { display:block; margin-bottom:6px; font-weight:600; }
+
+  /* 공통 레이아웃 안정화 */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ✅ 텍스트/셀렉트만 폭 100% 적용 */
+  .field input[type="text"],
+  .field select {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin: 0;
+    min-width: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  /* ✅ 파일 인풋은 기본 모양 유지 (원하지 않으면 이 블록은 생략 가능) */
+  .field input[type="file"] {
+    display: inline-block;
+    width: auto;
+    appearance: auto;
+    -webkit-appearance: auto;
+    box-sizing: content-box; /* 전역 border-box 영향 최소화 (선택) */
+  }
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+  <h1>PDF 업로드</h1>
+
+  <!-- 빠른 변환 -->
+  <div class="card">
+    <h2>빠른 변환</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- 파일 선택 -->
+      <div class="field">
+        <label for="file-fast">PDF 파일 선택</label>
+        <input id="file-fast" type="file" name="file" accept="application/pdf" required>
+        <p class="hint">{{ form.file.help_text }}</p>
+        {% if form.file.errors %}
+          <p style="color:#b91c1c;">{{ form.file.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <!-- 마스킹 옵션 (요청하신 내용 포함) -->
+      <div class="field">
+        <label for="mode-fast">마스킹 방식</label>
+        <select id="mode-fast" name="mode">
+          <option value="redact">마스킹</option>
+          <option value="highlight">강조 표시(테두리)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="target-mode-fast">대상 찾기 방식</label>
+        <select id="target-mode-fast" name="target_mode">
+          <option value="both">전체 사용</option>
+          <option value="josa_only">조사 기준으로 찾기</option>
+          <option value="nouns_only">명사 전체로 찾기</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="mask-ratio-fast">마스킹 정도(0~1)</label>
+        <input id="mask-ratio-fast" type="text" name="mask_ratio" value="0.95">
+      </div>
+
+      <br>
+      <button class="btn" type="submit">업로드 & 마스킹 실행</button>
+    </form>
+  </div>
+
+  <!-- 정확한 변환 -->
+  <div class="card">
+    <h2>정확한 변환</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- 파일 선택 -->
+      <div class="field">
+        <label for="file-accurate">PDF 파일 선택</label>
+        <input id="file-accurate" type="file" name="file" accept="application/pdf" required>
+        <p class="hint">{{ form.file.help_text }}</p>
+        {% if form.file.errors %}
+          <p style="color:#b91c1c;">{{ form.file.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <!-- 마스킹 옵션 (요청하신 내용 포함) -->
+      <div class="field">
+        <label for="mode-accurate">마스킹 방식</label>
+        <select id="mode-accurate" name="mode">
+          <option value="redact">마스킹</option>
+          <option value="highlight">강조 표시(테두리)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="target-mode-accurate">대상 찾기 방식</label>
+        <select id="target-mode-accurate" name="target_mode">
+          <option value="both">전체 사용</option>
+          <option value="josa_only">조사 기준으로 찾기</option>
+          <option value="nouns_only">명사 전체로 찾기</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="mask-ratio-accurate">마스킹 정도(0~1)</label>
+        <input id="mask-ratio-accurate" type="text" name="mask_ratio" value="0.95">
+      </div>
+
+      <br>
+      <button class="btn" type="submit">업로드 & 마스킹 실행</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
