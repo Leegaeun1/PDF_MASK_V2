@@ -91,14 +91,6 @@ def upload_form(request):
 def mask_api(request):
     """
     API 엔드포인트 (multipart/form-data)
-      필수:
-        - file : PDF 파일
-      옵션(폼 필드 또는 쿼리스트링):
-        - mode: redact|highlight
-        - target_mode: both|josa_only|nouns_only
-        - mask_ratio: float(0~1)
-        - min_mask_len: int
-        - allow_noun_span: true|false
     """
     f = request.FILES.get("file")
     if not f:
