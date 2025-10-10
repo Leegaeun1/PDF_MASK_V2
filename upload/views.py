@@ -82,7 +82,7 @@ def upload_form(request):
     new_filename = f"{name_part}_masked{extension}"
 	  # 다운로드 응답
     resp = HttpResponse(out_bytes, content_type="application/pdf")
-    resp["Content-Disposition"] = f'attachment; filename="{new_filename}.pdf"'
+    resp["Content-Disposition"] = f'attachment; filename="{new_filename}"'
     return resp
 
 

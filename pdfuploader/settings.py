@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [
 # https환경에서 POST 요청을 보낼때, 해당 요청이 신뢰할 수 있는 출처에서 왔는지 검사
 CSRF_TRUSTED_ORIGINS = [
     'https://*.run.app',
+    'https://*.gnupdf.com',
 ]
 
 '''이 프로젝트를 구성하는 앱들의 목록. upload를 추가한 이유가 우리의 핵심 기능인 PDF 업로드 및 처리가 들어가서.
