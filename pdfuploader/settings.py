@@ -28,6 +28,10 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.gnupdf.com',
 ]
 
+# settings.py
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") # https이면 요청이 안전하다고 판단함!
+USE_X_FORWARDED_HOST = True  # 절대 URL 생성(build_absolute_uri) 시 Host 신뢰
+
 '''이 프로젝트를 구성하는 앱들의 목록. upload를 추가한 이유가 우리의 핵심 기능인 PDF 업로드 및 처리가 들어가서.
 	 이때, 앱은 Django의 기능과 직접적으로 연결되는것을 뜻함.
 '''

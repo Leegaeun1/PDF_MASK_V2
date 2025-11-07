@@ -3,11 +3,11 @@
 # 1. 베이스 이미지: Django 5.2+ 버전을 지원하는 파이썬 3.10으로 업그레이드합니다.
 FROM python:3.12-bookworm
 
-# 2. 시스템 라이브러리 및 폰트 설치
+# 2. 시스템 라이브러리, LibreOffice, 폰트 설치
 # Noto CJK 폰트를 설치하여 한국어 처리 호환성을 보장합니다.
 RUN apt-get update && apt-get install -y \
-    libmupdf-dev \
-    mupdf-tools \
+    libreoffice \
+    fonts-nanum \
     fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 

@@ -13,6 +13,7 @@
   .hint { color:#6b7280; font-size:14px; }
   .field { margin: 10px 0; }
   .field label { display:block; margin-bottom:6px; font-weight:600; }
+  h1{ text-align: center;}
 
   /* 공통 레이아웃 안정화 */
   *, *::before, *::after { box-sizing: border-box; }
@@ -44,10 +45,26 @@
 
 </head>
 <body>
-  <div class="wrap">
   <h1>PDF 업로드</h1>
+  <div class="wrap">
+    <div class="card">
+        <h2>PPT -> PDF 변환</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'ppt_to_pdf' %}"> 
+          <!--action은 폼이 제출될 때 수집된 데이터를 전송할 위치 지정함.
+          url.py에서 name이 ppt_to_pdf으로 정의한 경로를 자동으로 찾아서 실제 url문자열로 변환해줌
+          -->
+          {% csrf_token %}
 
-    <!-- 빠른 변환 -->
+          <div class="field">
+            <label for="file-ppt">PPT/PPTX 파일 선택</label>
+            <input id="file-ppt" type="file" name="file" accept=".ppt,.pptx" required> 
+          </div>
+          <button class="btn" type="submit">PDF로 변환하기</button>
+        </form>
+      </div>
+  </div>
+  <div class="wrap">
+    <!-- 빠른 변환. action이 없는 이유는 현재 페이지로 전송하기 위해서 -->
     <div class="card">
       <h2>빠른 변환</h2>
       <form method="post" enctype="multipart/form-data">

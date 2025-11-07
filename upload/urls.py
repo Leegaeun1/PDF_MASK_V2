@@ -10,4 +10,5 @@ urlpatterns = [
     path("health/", views.health, name="health"),
     path("", views.upload_form, name="upload_form"),
     path("api/mask/", views.mask_api, name="mask_api"),
+    path("convert/ppt_to_pdf/", views.ppt_to_pdf, name="ppt_to_pdf"),
 ]
