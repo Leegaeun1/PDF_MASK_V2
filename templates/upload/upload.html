@@ -4,16 +4,29 @@
   <meta charset="utf-8">
   <title>PDF 업로더</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <style>
-  body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial; margin: 24px; }
+  body { font-family: 'SchoolSafetyRoundedSmile',ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial; margin: 24px; }
   .wrap { max-width: 720px; margin: 0 auto; }
-  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; flex:1}
   .btn { display:inline-block; padding:10px 16px; border-radius:10px; border:0; background:#111827; color:#fff; cursor:pointer; }
   .btn:disabled { opacity:.5; cursor:not-allowed; }
   .hint { color:#6b7280; font-size:14px; }
   .field { margin: 10px 0; }
   .field label { display:block; margin-bottom:6px; font-weight:600; }
-  h1{ text-align: center;}
+  h1{ font-family: 'SchoolSafetyRoundedSmile';text-align: center; }
+  @font-face {
+    font-family: 'Paperozi';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
+  @font-face {
+    font-family: 'SchoolSafetyRoundedSmile';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-R.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
 
   /* 공통 레이아웃 안정화 */
   *, *::before, *::after { box-sizing: border-box; }
@@ -45,24 +58,50 @@
 
 </head>
 <body>
+
   <h1>PDF 업로드</h1>
   <div class="wrap">
-    <div class="card">
-        <h2>PPT -> PDF 변환</h2>
-        <form method="post" enctype="multipart/form-data" action="{% url 'ppt_to_pdf' %}"> 
+    <div class="row justify-content-center">
+    <div class="col-sm-6 mb-3 mb-sm-0">
+
+        <div class="card">
+            <h2 >PPT -> PDF 변환</h2>
+            <form method="post" enctype="multipart/form-data" action="{% url 'ppt_to_pdf' %}"> 
+              <!--action은 폼이 제출될 때 수집된 데이터를 전송할 위치 지정함.
+              url.py에서 name이 ppt_to_pdf으로 정의한 경로를 자동으로 찾아서 실제 url문자열로 변환해줌
+              -->
+              {% csrf_token %}
+
+              <div class="field">
+                <label for="file-ppt">PPT/PPTX 파일 선택</label>
+                <input id="file-ppt" type="file" name="file" accept=".ppt,.pptx" required> 
+              </div>
+              <button class="btn" type="submit">PDF로 변환하기</button>
+            </form>
+          </div>
+    </div>
+    <div class="col-sm-6 mb-3 mb-sm-0" >
+      <div class="card">
+        <h2 >DOCX -> PDF 변환</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'docx_to_pdf' %}"> 
           <!--action은 폼이 제출될 때 수집된 데이터를 전송할 위치 지정함.
           url.py에서 name이 ppt_to_pdf으로 정의한 경로를 자동으로 찾아서 실제 url문자열로 변환해줌
           -->
           {% csrf_token %}
 
           <div class="field">
-            <label for="file-ppt">PPT/PPTX 파일 선택</label>
-            <input id="file-ppt" type="file" name="file" accept=".ppt,.pptx" required> 
+            <label for="file-docx">DOCX 파일 선택</label>
+            <input id="file-docx" type="file" name="file" accept=".docx,.doc" required> 
           </div>
           <button class="btn" type="submit">PDF로 변환하기</button>
         </form>
       </div>
+    </div>
   </div>
+  
+    
+  </div>
+  
   <div class="wrap">
     <!-- 빠른 변환. action이 없는 이유는 현재 페이지로 전송하기 위해서 -->
     <div class="card">
@@ -157,5 +196,6 @@
       </form>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
