@@ -306,3 +306,33 @@ def mask_api(request):
     resp["Content-Disposition"] = f'attachment; filename="{new_filename}.pdf"'
     resp["X-Content-Type-Options"] = "nosniff"
     return resp
+
+# =============================
+#          OCR Logic
+# =============================
+
+from engine.ai_mask_engine import mask_pdf_bytes_ai  # 추가
+from engine.mask_engine import mask_pdf_bytes        # 기존 엔진 (비교용)
+
+@csrf_exempt
+def mask_ai_api(request):
+    """
+    PaddleOCR 기반 AI 마스킹 API
+    """
+    if request.method == "POST" and request.FILES.get("file"):
+        try:
+            uploaded_file = request.FILES["file"]
+            pdf_bytes = uploaded_file.read()
+
+            # OCR 기반 마스킹 실행
+            masked_pdf = mask_pdf_bytes_ai(pdf_bytes)
+
+            response = HttpResponse(masked_pdf, content_type="application/pdf")
+            response["Content-Disposition"] = f'attachment; filename="masked_ai.pdf"'
+            return response
+
+        except Exception as e:
+            print(f"[ERROR] mask_ai_api failed: {e}")
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "No file uploaded"}, status=400)
