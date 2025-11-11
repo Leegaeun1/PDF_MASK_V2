@@ -1,0 +1,62 @@
+name: PDFmask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - feature/*
+
+jobs:
+  build-and-test:
+    name: Build & Test Django App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice fonts-nanum fonts-noto-cjk
+          pip install -r requirements.txt
+
+      - name: Run Django system check
+        run: python manage.py check
+
+      - name: Build Docker image (validation)
+        run: docker build -t pdfmask:test .
+
+  deploy-to-gcp:
+    name: Deploy to GCP (CD)
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.GCP_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh ${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }} << 'EOF'
+            cd /home/${{ secrets.GCP_USER }}/PDFmask
+            git pull origin main
+            docker stop pdfmask || true
+            docker rm pdfmask || true
+            docker build -t pdfmask:latest .
+            docker run -d --name pdfmask -p 8080:8080 pdfmask:latest
+          EOF
