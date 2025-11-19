@@ -2,7 +2,7 @@
 from pathlib import Path
 import os
 
-#최상위 폴더가 어디인지
+# 최상위 폴더가 어디인지
 BASE_DIR = Path(__file__).resolve().parent.parent 
 
 '''보안을 위한 암호화 키. 로컬 개발 시에는 SECRET_KEY라는 환경 변수 없으니까 뒤에 있는 임시 키를 사용함.
@@ -14,6 +14,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'some-default-secret-key-for-local-dev
 						False이면 실제 서비스 모드. 사용자에게 간단한 오류 페이지만 보여줌. 자동으로 False'''
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+# WSL에서 favicon.ico 출력하기
+if os.environ.get('WSL_DEV', 'False') == 'True':
+    DEBUG = True
+
 # 이 웹사이트에서 접속을 허용할 도메인 주소 목록. 
 ALLOWED_HOSTS = [
     '.run.app',
@@ -22,6 +26,7 @@ ALLOWED_HOSTS = [
     'gnupdf.com', 
     'www.gnupdf.com' # 현재는 shop으로 등록했으나 com으로 바꿀예정임
 ]
+
 # https환경에서 POST 요청을 보낼때, 해당 요청이 신뢰할 수 있는 출처에서 왔는지 검사
 CSRF_TRUSTED_ORIGINS = [
     'https://*.run.app',
@@ -42,6 +47,7 @@ INSTALLED_APPS = [
 ]
 # 여러 검문소 목록. 보안 등..
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # 반드시 맨 위
     'django.middleware.security.SecurityMiddleware','django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware','django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware','django.contrib.messages.middleware.MessageMiddleware',
@@ -65,13 +71,18 @@ WSGI_APPLICATION = 'pdfuploader.wsgi.application'
 # 프로젝트가 사용할 데이터베이스 설정
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3','NAME': BASE_DIR / 'db.sqlite3',}} # DB 경로
 
-# 정적 파일 및 미디어 파일 설정
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# 정적 파일 설정
+STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles' 
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+else:
+    STATICFILES_DIRS = []  # 운영 환경에서는 비활성화
 
-# 업로드 파일 설정
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# 미디어 파일
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 7. 정적 파일 수집
-RUN python manage.py collectstatic --noinput
+RUN python3 manage.py collectstatic --noinput
 
 # 8. Gunicorn 서버 실행
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--log-level", "debug", "pdfuploader.wsgi:application"]

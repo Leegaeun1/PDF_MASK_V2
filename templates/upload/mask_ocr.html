@@ -1,0 +1,33 @@
+{% extends "upload/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>OCR 기반 정밀 마스킹 (구현 중)</h2>
+<p class="mb-4">
+  PDF의 실제 텍스트 영역을 인식하여 정확한 범위 마스킹을 수행합니다.<br>
+  현재 OCR 기능은 개발 중입니다.
+</p>
+
+<form method="post" enctype="multipart/form-data" action="/api/mask/ocr" onsubmit="return false;">
+  {% csrf_token %}
+
+  <input type="file" name="file" accept="application/pdf" class="form-control mb-3" disabled>
+
+  <select name="mode" class="form-select mb-2" disabled>
+    <option value="redact">마스킹</option>
+    <option value="highlight">강조 표시</option>
+  </select>
+
+  <select name="target_mode" class="form-select mb-2" disabled>
+    <option value="both">전체 사용</option>
+    <option value="josa_only">조사 기준</option>
+    <option value="nouns_only">명사 기준</option>
+  </select>
+
+  <input type="text" name="mask_ratio" value="0.95" class="form-control mb-3" disabled>
+
+  <button class="btn btn-secondary w-100 mt-3" disabled>
+    OCR 마스킹 실행 (준비 중)
+  </button>
+</form>
+{% endblock %}
