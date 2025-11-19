@@ -25,8 +25,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'gnupdf.com', 
     'www.gnupdf.com', # 현재는 shop으로 등록했으나 com으로 바꿀예정임
-    '34.47.85.198'  # TEST SERVER
 ]
+
 # https환경에서 POST 요청을 보낼때, 해당 요청이 신뢰할 수 있는 출처에서 왔는지 검사
 CSRF_TRUSTED_ORIGINS = [
     'https://*.run.app',
