@@ -72,7 +72,12 @@ DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3','NAME': BASE_DIR
 
 # 정적 파일 설정
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+else:
+    STATICFILES_DIRS = []  # 운영 환경에서는 비활성화
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # 미디어 파일
