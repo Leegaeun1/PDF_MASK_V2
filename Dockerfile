@@ -1,33 +1,54 @@
-# Dockerfile
+# Debian Bullseye 베이스 이미지 사용 (안정성을 위해)
+FROM python:3.11-slim-bookworm
 
-# 1. 베이스 이미지: Django 5.2+ 버전을 지원하는 파이썬 3.10으로 업그레이드합니다.
-FROM python:3.12-bookworm
-
-# 2. 시스템 라이브러리, LibreOffice, 폰트 설치
-# Noto CJK 폰트를 설치하여 한국어 처리 호환성을 보장합니다.
-RUN apt-get update && apt-get install -y \
+# 1. 시스템 업데이트 및 필수 패키지 설치
+# Python 환경, LibreOffice, Java 21, 런타임 패키지 설치
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    # Python 환경 및 유틸리티
+    python3 python3-pip python3-venv \
+    locales \
+    # 1. 'which' 제거함 (패키지명이 아님)
+    unzip redis-tools \
+    # LibreOffice 및 Java (Bullseye 호환 버전으로 변경)
     libreoffice \
-    fonts-nanum \
+    libreoffice-java-common \
+    # 2. Java 21 -> default-jre-headless (Java 11)로 변경
+    default-jre-headless \
+    # LibreOffice 런타임 안정화 패키지
     fonts-noto-cjk \
+    libxext6 libxrender1 libxtst6 fontconfig \
+    # ... 아래 정리 명령어는 그대로 유지 ...
+    && rm -rf /root/.config/libreoffice \
+    && rm -rf /root/.local/share/fonts \
+    && fc-cache -f -v \
+    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && echo "LibreOffice environment initialized." \
+    && mkdir -p /tmp/celery_jobs \
+    && chmod 777 /tmp/celery_jobs \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. 환경 변수 설정
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# 2. 환경 변수 설정 (Java 21 경로 명시)
+# Java 21의 설치 경로를 JAVA_HOME으로 설정
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+# 🚨 Java 21 경로로 변경 (Debian에서 표준 설치 경로)
+ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH $JAVA_HOME/bin:$PATH
 
-# 4. 작업 디렉토리 생성
 WORKDIR /app
 
-# 5. 의존성 파일 복사 및 설치
-COPY requirements.txt /app/
+# 3. 파이썬 종속성 설치
+COPY requirements.txt .
+# pip 설치 (Debian 환경의 표준)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 6. 프로젝트 파일 전체 복사
-COPY . .
+# 4. Django 프로젝트 및 Entrypoint 설정
+COPY . /app
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# 7. 정적 파일 수집
-RUN python3 manage.py collectstatic --noinput
-
-# 8. Gunicorn 서버 실행
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--log-level", "debug", "pdfuploader.wsgi:application"]
-
+# 5. CMD 정의 (gunicorn 실행)
+CMD ["gunicorn", "pdfuploader.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "300"]

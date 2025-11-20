@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     '.run.app',
     'localhost',
     '127.0.0.1',
+    '34.158.200.110',
     'gnupdf.com', 
     'www.gnupdf.com' # 현재는 shop으로 등록했으나 com으로 바꿀예정임
 ]
@@ -89,3 +90,30 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # 업로드 용량 제한: 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
+
+# settings.py 파일 하단에 추가
+
+# Celery Configuration
+# REDIS_HOST는 docker-compose.yml에 정의된 Redis 서비스 이름과 동일해야 합니다.
+REDIS_HOST = "redis_master" 
+REDIS_PORT = 6379
+
+# Celery Broker URL (작업 메시지를 어디에 저장할 것인지)
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+
+# Celery Backend URL (작업 결과를 어디에 저장할 것인지)
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+CELERY_BROKER_CONNECTION_TIMEOUT = 3
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Seoul' # 시간대 설정
+CELERY_IMPORTS = [
+    'upload.tasks', 
+    # 필요한 경우 다른 앱의 tasks 파일도 여기에 추가합니다.
+]
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600, # 작업 가시성 시간 (Worker가 Task를 가져간 후 다시 큐로 돌아오기까지의 시간)
+    'broker_connection_retry_on_startup': True, # 시작 시 연결 오류 발생해도 재시도
+}
