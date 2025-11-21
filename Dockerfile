@@ -13,12 +13,10 @@ RUN apt-get update && \
     # LibreOffice 및 Java (Bullseye 호환 버전으로 변경)
     libreoffice \
     libreoffice-java-common \
-    # 2. Java 21 -> default-jre-headless (Java 11)로 변경
     default-jre-headless \
     # LibreOffice 런타임 안정화 패키지
     fonts-noto-cjk \
     libxext6 libxrender1 libxtst6 fontconfig \
-    # ... 아래 정리 명령어는 그대로 유지 ...
     && rm -rf /root/.config/libreoffice \
     && rm -rf /root/.local/share/fonts \
     && fc-cache -f -v \
@@ -29,11 +27,9 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. 환경 변수 설정 (Java 21 경로 명시)
-# Java 21의 설치 경로를 JAVA_HOME으로 설정
+# 2. 환경 변수 설정
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
-# 🚨 Java 21 경로로 변경 (Debian에서 표준 설치 경로)
 ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
 

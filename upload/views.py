@@ -23,7 +23,6 @@ CELERY_JOB_DIR = "/tmp/celery_jobs"
 
 # =============================
 # Helper: 파일 처리 및 Job ID 생성
-# (실제 환경에서는 Cloud Storage 및 DB/Redis 로직으로 대체되어야 합니다.)
 # =============================
 
 def save_uploaded_file_and_get_path(uploaded_file, job_id):
@@ -85,9 +84,9 @@ def mask_ocr_page(request):
 
 
 # =============================
-#        PPT → PDF (비동기 변경)
+#        PPT → PDF 
 # =============================
-# **이 함수는 연산을 수행하지 않고, Task를 위임하고 즉시 응답합니다.**
+# 이 함수는 연산을 수행하지 않고, Task를 위임하고 즉시 응답합니다.
 def ppt_to_pdf(request):
     if request.method != "POST":
         return HttpResponseBadRequest("POST only")
@@ -106,7 +105,7 @@ def ppt_to_pdf(request):
         return JsonResponse({"error": f"File save failed: {e}"}, status=500)
 
     try:
-        # 3. Celery Task 위임 (가장 중요!)
+        # 3. Celery Task 위임
         # 무거운 연산은 Worker에게 맡기고 바로 반환합니다.
         task_result = exec_ppt_to_pdf_task.apply_async(args=[job_id, in_path, f.name], task_id=job_id)# type: ignore
         logger.info(f"PPT to PDF job submitted: {job_id}, Celery ID: {task_result.id}")
@@ -126,7 +125,7 @@ def ppt_to_pdf(request):
 
 
 # =============================
-#       DOCX → PDF (비동기 변경)
+#       DOCX → PDF 
 # =============================
 # **이 함수 역시 Task를 위임하고 즉시 응답합니다.**
 def docx_to_pdf(request):
@@ -164,7 +163,7 @@ def docx_to_pdf(request):
 
 
 # =============================
-#         Fast Mask API (비동기 변경)
+#         Fast Mask API
 # =============================
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -244,9 +243,9 @@ def mask_ai_api(request):
         return JsonResponse({"error": "Failed to submit job to queue. Check Redis/Celery connection."}, status=500)
 
 
-# =============================
+# ===============================================
 #         NEW: Task Status API
-# =============================
+# ===============================================
 
 @require_http_methods(["GET"])
 def get_job_status(request, job_id):
@@ -290,9 +289,9 @@ def get_job_status(request, job_id):
     return JsonResponse(response_data)
 
 
-# =============================
+# ================================================
 #         NEW: Result Download API
-# =============================
+# ================================================
 
 @require_http_methods(["GET"])
 # download_result 함수 전체 수정
@@ -303,7 +302,6 @@ def download_result(request, job_id):
     if task.status != 'SUCCESS':
         return JsonResponse({"error": "Job is not completed yet"}, status=400)
     
-    # 👇 [수정] task.result가 이제 '경로'가 아니라 '꾸러미(dict)'입니다.
     result_data = task.result 
     
     # 예전 버전 호환성을 위해 dict인지 확인
@@ -325,7 +323,7 @@ def download_result(request, job_id):
         job_dir = os.path.dirname(result_path)
         shutil.rmtree(job_dir, ignore_errors=True)
         
-        # 👇 [핵심] 한글 파일명 깨짐 방지 처리
+        # 한글 파일명 깨짐 방지 처리
         encoded_filename = escape_uri_path(original_name)
         
         response = HttpResponse(file_data, content_type='application/pdf')
