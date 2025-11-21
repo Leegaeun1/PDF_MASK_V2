@@ -28,6 +28,28 @@
       width:480px; margin:60px auto;
     }
   </style>
+  <script>
+  (function() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    
+    // 인앱 브라우저 확인 (카카오/네이버/라인/인스타)
+    if (userAgent.match(/kakaotalk|naver|line|instagram/i)) {
+      
+      // 1. 안드로이드인 경우
+      if (userAgent.match(/android/i)) {
+
+        // "네가 가진 아무 브라우저로나 열어라"
+        location.href = 'intent://' + location.host + location.pathname + location.search + 
+                        '#Intent;scheme=https;end'; 
+      } 
+      
+      // 2. 아이폰인 경우 (iOS는 방법이 없음 -> 안내 메시지)
+      else if (userAgent.match(/iphone|ipad|ipod/i)) {
+        alert('이 앱에서는 다운로드가 제한될 수 있습니다.\n오른쪽 상단 메뉴(...)를 눌러 "Safari로 열기"를 해주세요.');
+      }
+    }
+  })();
+</script>
 </head>
 <body>
 
