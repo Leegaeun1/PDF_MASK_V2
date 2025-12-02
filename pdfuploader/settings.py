@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://*.run.app',
     'https://*.gnupdf.com',
+    'https://*.gnupdf.cloud'
 ]
 
 # settings.py
