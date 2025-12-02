@@ -50,13 +50,16 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.GCP_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
+      - name: Deploy via SSH (Docker Compose)
         run: |
           ssh ${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }} << 'EOF'
-            cd /home/${{ secrets.GCP_USER }}/PDFmask
+            cd /home/${{ secrets.GCP_USER }}/PDF_MASK_V2 || exit 1
+            echo "Pulling latest code..."
             git pull origin main
-            docker stop pdfmask || true
-            docker rm pdfmask || true
-            docker build -t pdfmask:latest .
-            docker run -d --name pdfmask -p 8080:8080 pdfmask:latest
+            echo "Running Docker Compose..."
+            docker-compose up -d --build --force-recreate
+            echo "Restarting Web container..."
+            docker-compose restart web
+
+            docker image prune -f
           EOF
