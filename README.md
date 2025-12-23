@@ -117,7 +117,7 @@
 docx,ppt 변환 화면
 </br>
 </br>
-![pdfmask](https://github.com/user-attachments/assets/b6af67c2-fb77-437d-9aac-ce92d7e94ffa)
+https://github.com/user-attachments/assets/b6af67c2-fb77-437d-9aac-ce92d7e94ffa
 
 
 ## 5. 성능 개선 및 문제 해결 (Troubleshooting)
